@@ -41,13 +41,13 @@ One zustand store:
 | Component | Responsibility |
 |---|---|
 | `App` | Layout: header, map, cart, toasts |
-| `SeatMap` | The SVG, zoom and pan, delegated events, legend |
+| `SeatMap` | A toolbar above the map (legend, "scroll to zoom, drag to pan" hint, zoom in, zoom out and reset) and, below it, the SVG with zoom and pan, delegated events and section labels centred over each block. Nothing overlays the seats. |
 | `SeatDot` | One memoized circle with `data-seat-id`, coloured by tier and status |
 | `Tooltip` | Section, row, seat, status, and live price for the hovered seat |
 | `CartPanel` | Held seats, prices, total, a countdown per hold, Release and Checkout |
 | `Toasts` | Messages for 409 and 410 errors and confirmed orders, for example "Seat A12 was just taken" |
 | `ConnectionBadge` | "Live", "Connecting…" or "Reconnecting… map may be out of date" |
-| `Legend` | Tier and status colours |
+| `Legend` | Tier and status colours, shown inline in the map toolbar |
 
 ## Styling and colours
 

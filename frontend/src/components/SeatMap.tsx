@@ -1,6 +1,7 @@
 import { memo, useEffect, useRef, type PointerEvent as ReactPointerEvent } from 'react'
 import { toggleSeat } from '../lib/seatActions'
 import { useSeatStore } from '../store/seatStore'
+import { Legend } from './Legend'
 import { SeatDot } from './SeatDot'
 import { Tooltip, type TooltipHandle } from './Tooltip'
 
@@ -11,7 +12,8 @@ const BUTTON_ZOOM_STEP = 1.4
 const DRAG_THRESHOLD_PX = 4
 const STAGE_TOP = 20
 const STAGE_HEIGHT = 60
-const LABEL_OFFSET = 10
+const LABEL_OFFSET = 14
+const MAP_PADDING = 12
 
 interface View {
   x: number
@@ -60,9 +62,9 @@ const SectionLabels = memo(function SectionLabels() {
   const labels = useSeatStore((s) => s.labels)
   const sections = useSeatStore((s) => s.sections)
   return (
-    <g className="pointer-events-none fill-slate-500 text-[11px] font-semibold tracking-wide uppercase">
+    <g className="pointer-events-none fill-slate-600 text-[22px] font-bold tracking-wider uppercase">
       {labels.map((label) => (
-        <text key={label.id} x={label.x - 4} y={label.y - LABEL_OFFSET}>
+        <text key={label.id} x={label.x} y={label.y - LABEL_OFFSET} textAnchor="middle">
           {sections[label.id]?.name}
         </text>
       ))}
@@ -181,66 +183,74 @@ export function SeatMap() {
   }
 
   return (
-    <div className="relative h-full w-full">
-      <svg
-        ref={svgRef}
-        viewBox={`0 0 ${bounds.width} ${bounds.height}`}
-        className="h-full w-full cursor-grab touch-none select-none active:cursor-grabbing"
-        role="img"
-        aria-label="Arena seating map"
-        onPointerDown={onPointerDown}
-        onPointerMove={onPointerMove}
-        onPointerUp={onPointerUp}
-        onPointerCancel={onPointerUp}
-        onPointerOver={onPointerOver}
-        onPointerLeave={() => tooltipRef.current?.hide()}
-        onClick={onClick}
-      >
-        <g ref={groupRef}>
-          <rect
-            x={bounds.width * 0.25}
-            y={STAGE_TOP}
-            width={bounds.width * 0.5}
-            height={STAGE_HEIGHT}
-            rx={12}
-            className="fill-slate-800"
-          />
-          <text
-            x={bounds.width / 2}
-            y={STAGE_TOP + STAGE_HEIGHT / 2 + 6}
-            textAnchor="middle"
-            className="pointer-events-none fill-white text-lg font-bold tracking-[0.4em]"
-          >
-            STAGE
-          </text>
-          <SectionLabels />
-          <SeatLayer />
-        </g>
-      </svg>
-      <div className="absolute top-3 right-3 flex flex-col overflow-hidden rounded-lg border border-slate-200 bg-white shadow">
-        <button
-          type="button"
-          className="px-3 py-1.5 text-lg hover:bg-slate-100"
-          aria-label="Zoom in"
-          onClick={() => zoomFromCenter(BUTTON_ZOOM_STEP)}
+    <div className="flex h-full w-full flex-col">
+      <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-200 bg-white px-3 py-2">
+        <Legend />
+        <div className="flex items-center gap-2">
+          <span className="hidden text-xs text-slate-500 md:inline">Scroll to zoom, drag to pan</span>
+          <div className="flex overflow-hidden rounded-lg border border-slate-200 bg-white shadow-sm">
+            <button
+              type="button"
+              className="px-3 py-1 text-lg leading-none hover:bg-slate-100"
+              aria-label="Zoom in"
+              onClick={() => zoomFromCenter(BUTTON_ZOOM_STEP)}
+            >
+              +
+            </button>
+            <button
+              type="button"
+              className="border-l border-slate-200 px-3 py-1 text-lg leading-none hover:bg-slate-100"
+              aria-label="Zoom out"
+              onClick={() => zoomFromCenter(1 / BUTTON_ZOOM_STEP)}
+            >
+              −
+            </button>
+            <button
+              type="button"
+              className="border-l border-slate-200 px-3 py-1 text-xs hover:bg-slate-100"
+              onClick={resetView}
+            >
+              Reset
+            </button>
+          </div>
+        </div>
+      </div>
+      <div className="relative min-h-0 flex-1">
+        <svg
+          ref={svgRef}
+          viewBox={`${-MAP_PADDING} 0 ${bounds.width + MAP_PADDING} ${bounds.height}`}
+          className="h-full w-full cursor-grab touch-none select-none active:cursor-grabbing"
+          role="img"
+          aria-label="Arena seating map"
+          onPointerDown={onPointerDown}
+          onPointerMove={onPointerMove}
+          onPointerUp={onPointerUp}
+          onPointerCancel={onPointerUp}
+          onPointerOver={onPointerOver}
+          onPointerLeave={() => tooltipRef.current?.hide()}
+          onClick={onClick}
         >
-          +
-        </button>
-        <button
-          type="button"
-          className="border-t border-slate-200 px-3 py-1.5 text-lg hover:bg-slate-100"
-          aria-label="Zoom out"
-          onClick={() => zoomFromCenter(1 / BUTTON_ZOOM_STEP)}
-        >
-          −
-        </button>
-        <button
-          type="button"
-          className="border-t border-slate-200 px-3 py-1.5 text-xs hover:bg-slate-100"
-          onClick={resetView}
-        >
-          Reset
-        </button>
+          <g ref={groupRef}>
+            <rect
+              x={bounds.width * 0.25}
+              y={STAGE_TOP}
+              width={bounds.width * 0.5}
+              height={STAGE_HEIGHT}
+              rx={12}
+              className="fill-slate-800"
+            />
+            <text
+              x={bounds.width / 2}
+              y={STAGE_TOP + STAGE_HEIGHT / 2 + 9}
+              textAnchor="middle"
+              className="pointer-events-none fill-white text-[26px] font-bold tracking-[0.4em]"
+            >
+              STAGE
+            </text>
+            <SectionLabels />
+            <SeatLayer />
+          </g>
+        </svg>
       </div>
       <Tooltip ref={tooltipRef} />
     </div>
