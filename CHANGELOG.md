@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.0.12] - 2026-10-06
+
+### Fixed
+
+- **Frontend: The seat map, header and messages fit a phone screen.** On screens narrower than 640 px
+  the map used to show all 12,000 seats at about 1 px each; it now opens zoomed on the front rows of
+  the Center VIP section, with seats about 11 px across and a readable section name, while Reset
+  still shows the whole arena and desktop still opens on the full view. The header drops its
+  description line on phones, shows who is signed in, and keeps Sign out on one line, and the
+  connection badge shortens its reconnecting message there. Toasts now appear at the top on phones,
+  so an order confirmation no longer covers the Check out button. In a browser check at 390 px the
+  page never scrolls sideways, and holding and checking out work.
+  [#23](https://github.com/amalps565/theater-arena-booking/issues/23)
+
 ## [0.0.11] - 2026-10-06
 
 ### Fixed
