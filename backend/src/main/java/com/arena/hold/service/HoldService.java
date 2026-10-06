@@ -8,7 +8,9 @@ import com.arena.hold.exception.SeatNotFoundException;
 import com.arena.hold.exception.SeatUnavailableException;
 import com.arena.pricing.PricingService;
 import com.arena.venue.entity.Seat;
+import com.arena.venue.entity.SeatStatus;
 import com.arena.venue.entity.Section;
+import com.arena.venue.event.SeatChange;
 import com.arena.venue.event.SeatsChangedEvent;
 import com.arena.venue.repository.SeatRepository;
 import com.arena.venue.repository.SectionRepository;
@@ -89,6 +91,24 @@ public class HoldService {
     return seatRepository.findLiveHolds(customerId, clock.instant()).stream()
         .map(HeldSeat::of)
         .toList();
+  }
+
+  @Transactional
+  public int releaseExpiredHolds() {
+    Instant now = clock.instant();
+    List<Long> expired = seatRepository.findExpiredHoldIds(now);
+    if (expired.isEmpty()) {
+      return 0;
+    }
+    seatRepository.releaseExpired(expired, now);
+    List<SeatChange> released =
+        seatRepository.findChanges(expired).stream()
+            .filter(change -> change.status() == SeatStatus.AVAILABLE)
+            .toList();
+    if (!released.isEmpty()) {
+      events.publishEvent(new SeatsChangedEvent(released));
+    }
+    return released.size();
   }
 
   private Map<Long, Section> sectionsOf(List<Seat> seats) {

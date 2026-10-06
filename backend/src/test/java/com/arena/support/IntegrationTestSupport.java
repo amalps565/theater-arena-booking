@@ -27,6 +27,8 @@ public abstract class IntegrationTestSupport {
 
   @AfterEach
   void resetSeats() {
+    jdbcTemplate.update("delete from order_item");
+    jdbcTemplate.update("delete from orders");
     jdbcTemplate.update(
         "update seat set status = 'AVAILABLE', held_by = null, hold_expires_at = null,"
             + " held_price_cents = null");
