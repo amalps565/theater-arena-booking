@@ -1,6 +1,7 @@
 package com.arena.venue.service;
 
 import com.arena.pricing.PricingService;
+import com.arena.pricing.SectionPriceService;
 import com.arena.venue.dto.SectionView;
 import com.arena.venue.dto.VenueResponse;
 import com.arena.venue.entity.Section;
@@ -25,6 +26,7 @@ public class VenueService {
   private final SectionRepository sectionRepository;
   private final SeatRepository seatRepository;
   private final PricingService pricingService;
+  private final SectionPriceService sectionPriceService;
   private final Clock clock;
 
   @Transactional(readOnly = true)
@@ -43,7 +45,14 @@ public class VenueService {
             .toList();
     List<SectionView> sectionViews =
         sections.stream()
-            .map(s -> new SectionView(s.getId(), s.getName(), s.getTier(), s.getBasePriceCents()))
+            .map(
+                s ->
+                    new SectionView(
+                        s.getId(),
+                        s.getName(),
+                        s.getTier(),
+                        s.getBasePriceCents(),
+                        sectionPriceService.priceSeq(s.getId())))
             .toList();
     return new VenueResponse(sectionViews, VenueResponse.SEAT_FIELDS, seats);
   }

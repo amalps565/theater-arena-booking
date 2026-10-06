@@ -45,6 +45,15 @@ public interface SeatRepository extends JpaRepository<Seat, Long> {
       """)
   long countOccupiedInSection(@Param("sectionId") long sectionId, @Param("now") Instant now);
 
+  @Query(
+      """
+      select new com.arena.venue.repository.SeatPosition(s.id, s.rowIndex)
+      from Seat s
+      where s.sectionId = :sectionId
+      order by s.id
+      """)
+  List<SeatPosition> findPositionsInSection(@Param("sectionId") long sectionId);
+
   @Modifying(flushAutomatically = true, clearAutomatically = true)
   @Query(
       """
