@@ -2,6 +2,26 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.0.2] - 2026-10-06
+
+### Added
+
+- **Full stack: Developers can build, test and run the backend and the frontend.** `backend/` is a
+  Spring Boot 4.1 app on Java 21 with Web MVC, JPA, Flyway, WebSocket, validation and actuator over an
+  in-memory H2 database in PostgreSQL mode, with `ddl-auto: validate` so only Flyway changes the
+  schema. Spotless with Google Java Format runs on `verify`, and Awaitility is available for async
+  tests. `frontend/` is a Vite + React + TypeScript app in strict mode with zustand,
+  `@stomp/stompjs`, Vitest, Testing Library and ESLint; Vite's default oxlint was swapped for ESLint
+  so the lint hook and the gate commands use the same tool. The dev server proxies `/api` and `/ws` to
+  the backend on port 8080. The backend, the frontend and this changelog all carry `0.0.2`.
+  [#1](https://github.com/amalps565/theater-arena-booking/issues/1)
+- **Repo: The design is documented in `.wiki/`, versioned with the code.** Fifteen pages cover the
+  problem statement, decisions, architecture, data model, the atomic hold that stops double-booking,
+  hold expiry and checkout, dynamic pricing, the REST and WebSocket contract, the seat map design,
+  testing and the workflow. `CLAUDE.md` points to them and requires a PR that changes the contract,
+  schema or pricing to update the matching page.
+  [#1](https://github.com/amalps565/theater-arena-booking/issues/1)
+
 ## [0.0.1] - 2026-10-06
 
 ### Added

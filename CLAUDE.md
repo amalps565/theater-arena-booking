@@ -36,8 +36,12 @@ Run `node .claude/hooks/tests/run-all.cjs` after changing a hook.
 | Issues, PR titles, boards, merge rules | `.claude/conventions/github-pr.md` |
 | Review method and the review body shape | `.claude/conventions/review-conventions.md`, `review-template.md` |
 | Reviewer agents | `.claude/agents/` |
+| Design, REST and WebSocket contract, data model, test recipes | `.wiki/` (`API-Reference.md`, `Real-Time-Updates.md`, `Data-Model.md`, `Testing-Strategy.md`, …; index in `.wiki/README.md`) |
 
-Each rule lives in one place; everything else points there. Do not repeat a rule here.
+Each rule lives in one place; everything else points there. Do not repeat a rule here. `.wiki/`
+explains design; when it disagrees with this file or a conventions skill, the repo wins and the page
+is corrected. A PR that changes the REST or WebSocket contract, the schema, or the pricing rules
+updates the matching `.wiki/` page in the same PR. Read only the page the work needs.
 
 ## Project-specific
 
@@ -80,3 +84,5 @@ each `<stack>-conventions` skill, which holds the rules and the **Scope** of its
   - `frontend` label or any change under `frontend/` → `react-conventions`, `senior-react-engineer`
 - **Repo-specific skills**: NULL
 - **Siblings**: NULL — backend and frontend live in this repo.
+- **Wiki**: `.wiki/` in this repo, versioned and reviewed with the code. Start at `.wiki/README.md`.
+  Pages link to each other with relative Markdown links (`[Data Model](Data-Model.md)`).
