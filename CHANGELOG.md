@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.0.11] - 2026-10-06
+
+### Fixed
+
+- **Frontend: Section names are readable and the map controls never cover seats.** Section labels
+  were about 5 px tall on the full arena view; they are now about 15 px, bold and centred over their
+  block of seats, and the "STAGE" text grew to match. The zoom in, zoom out and reset buttons used to
+  float over the Right Premium seats and the legend sat over the bottom-left corner; both now live in
+  a toolbar above the map with a "scroll to zoom, drag to pan" hint, so nothing overlays the seat
+  map. A small margin keeps the left-edge seats from touching the border. In a browser check, no seat
+  is covered by a control or the legend and none is cut off, and zoom, pan, hover prices and holding
+  still work. [#21](https://github.com/amalps565/theater-arena-booking/issues/21)
+
 ## [0.0.10] - 2026-10-06
 
 ### Added

@@ -1,6 +1,5 @@
 import { CartPanel } from './components/CartPanel'
 import { ConnectionBadge } from './components/ConnectionBadge'
-import { Legend } from './components/Legend'
 import { LoginPage } from './components/LoginPage'
 import { SeatMap } from './components/SeatMap'
 import { Toasts } from './components/Toasts'
@@ -51,7 +50,6 @@ function ArenaPage({ session }: { session: Session }) {
               Loading the arena…
             </div>
           )}
-          <Legend />
         </section>
         <CartPanel />
       </main>
