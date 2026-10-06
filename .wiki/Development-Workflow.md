@@ -25,6 +25,18 @@ flowchart LR
 | Review | `/pr-review <N>` | Reviews the diff with the reviewer agent(s) and posts one PASS or FAIL verdict with a findings table |
 | Fix | `/fix-review-comments <N>` | Verifies each finding, agrees fixes with you, commits, and replies |
 
+## CI
+
+`.github/workflows/ci.yml` runs on every pull request to `main` and every push to `main`, as three separate checks:
+
+| Check | Runs |
+|---|---|
+| Backend (format + tests) | `./mvnw spotless:check`, then `./mvnw test` |
+| Frontend (lint + tests + build) | `npm ci`, `npm run lint`, `npm test -- --run`, `npm run build` |
+| No comments added to source | `node scripts/check-added-comments.cjs <base>` against the PR base, or the previous `main` on a push |
+
+Both apps are checked on every PR, even one that only touches one side, so a contract break between them is caught. Maven and npm downloads are cached. Merge only when all three checks are green.
+
 ## Branches and PRs
 
 - Branch from an up-to-date `main`, named `<N>-short-slug`, for example `3-atomic-seat-holds`.
