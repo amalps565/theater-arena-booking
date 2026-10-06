@@ -27,15 +27,15 @@ flowchart LR
 
 ## CI
 
-`.github/workflows/ci.yml` runs on every pull request to `main` and every push to `main`, as three separate checks:
+`.github/workflows/ci.yml` (modelled on the Lambdabooks CI) runs on every pull request to `main` and every push to `main`, as three jobs. Each step after the first carries `if: !cancelled()`, so one failure does not hide the others.
 
-| Check | Runs |
+| Job | Steps |
 |---|---|
+| Quality (versions, PR title, comments, hooks, secrets) | `scripts/validate-versions.cjs`: `pom.xml`, `package.json` and `CHANGELOG.md` agree, and on a PR the version moves from the base by exactly one +1 increment. PR title matches `#<N> \| <description>` (10–100 chars). `scripts/check-added-comments.cjs` against the PR base. All hook tests (`.claude/hooks/tests/run-all.cjs`). A gitleaks secret scan with `.gitleaks.toml`. |
 | Backend (format + tests) | `./mvnw spotless:check`, then `./mvnw test` |
-| Frontend (lint + tests + build) | `npm ci`, `npm run lint`, `npm test -- --run`, `npm run build` |
-| No comments added to source | `node scripts/check-added-comments.cjs <base>` against the PR base, or the previous `main` on a push |
+| Frontend (lint + tests + build) | `npm ci`, `npm run lint`, `npm test -- --run`, `npm run build`, then the react-lint hook suite against the installed ESLint |
 
-Both apps are checked on every PR, even one that only touches one side, so a contract break between them is caught. Maven and npm downloads are cached. Merge only when all three checks are green.
+Both apps are checked on every PR, even one that only touches one side, so a contract break between them is caught. Maven and npm downloads are cached, and Node comes from `frontend/.nvmrc`. Merge only when all three jobs are green.
 
 ## Branches and PRs
 

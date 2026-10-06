@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.0.9] - 2026-10-06
+
+### Changed
+
+- **Repo: CI now enforces the repository's own rules, following the Lambdabooks CI.** A new
+  `Quality` job checks that `backend/pom.xml`, `frontend/package.json` and this changelog carry the
+  same version and that a PR moves it by exactly one +1 increment (`scripts/validate-versions.cjs`),
+  that the PR title matches `#<N> | <description>` in 10–100 characters, that no source file gains a
+  comment, that every guardrail hook test passes, and that gitleaks finds no secrets
+  (`.gitleaks.toml`). The backend and frontend jobs keep their checks, the frontend job also runs the
+  react-lint hook suite against the installed ESLint, and Node comes from `frontend/.nvmrc`. Steps run
+  with `if: !cancelled()` so one failure does not hide the rest, every job has a timeout, and a new
+  push to a PR cancels the run it replaces. `CLAUDE.md` now registers the PR title regex.
+  [#13](https://github.com/amalps565/theater-arena-booking/issues/13)
+
 ## [0.0.8] - 2026-10-06
 
 ### Added

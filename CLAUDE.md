@@ -60,7 +60,7 @@ each `<stack>-conventions` skill, which holds the rules and the **Scope** of its
 - **Branch Name**: `<N>-short-slug`
 - **Ticket Prefix**: NULL
 - **PR Title**: `#<N> | <short description>` — spaces around the pipe.
-- **PR Title Regex**: NULL
+- **PR Title Regex**: `^#[0-9]+ \| .+` (10–100 chars), checked by CI
 - **PR Template**: NULL
 - **Project Board**: NULL
 - **Assign On Start**: yes
@@ -74,7 +74,8 @@ each `<stack>-conventions` skill, which holds the rules and the **Scope** of its
   `Backend:`, `Frontend:` or `Full stack:` by the area it changes (`Repo:` for tooling and setup),
   then says what changed and why, and ends with
   `[#<N>](https://github.com/amalps565/theater-arena-booking/issues/<N>)`. `backend/pom.xml`
-  `<version>` and `frontend/package.json` `version` must equal the heading.
+  `<version>` and `frontend/package.json` `version` must equal the heading. CI enforces both with
+  `node scripts/validate-versions.cjs origin/main`; run it locally before raising the PR.
 - **Merge Method**: merge commit — `gh pr merge <N> --merge`. Close the linked issue through the
   PR's `Closes #N`.
 - **Conventions Skills**: `java-conventions`, `react-conventions`
