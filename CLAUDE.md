@@ -64,7 +64,13 @@ each `<stack>-conventions` skill, which holds the rules and the **Scope** of its
 - **Gate Commands**:
   - `cd backend && ./mvnw spotless:apply && ./mvnw test`
   - `cd frontend && npm run lint && npm test -- --run && npm run build`
-- **Version Bump**: NULL
+- **Version Bump**: one root `CHANGELOG.md` for the whole repo, never one per folder.
+  `## [x.y.z] - YYYY-MM-DD` (Added/Changed/Fixed/Removed), exactly one patch above the PR's base,
+  normally `main`. Each entry opens with a bold one-line outcome a non-developer can read, prefixed
+  `Backend:`, `Frontend:` or `Full stack:` by the area it changes (`Repo:` for tooling and setup),
+  then says what changed and why, and ends with
+  `[#<N>](https://github.com/amalps565/theater-arena-booking/issues/<N>)`. `backend/pom.xml`
+  `<version>` and `frontend/package.json` `version` must equal the heading.
 - **Merge Method**: merge commit — `gh pr merge <N> --merge`. Close the linked issue through the
   PR's `Closes #N`.
 - **Conventions Skills**: `java-conventions`, `react-conventions`
