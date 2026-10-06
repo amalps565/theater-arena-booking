@@ -2,7 +2,7 @@
 
 An interactive **arena seating chart** for a high-profile concert. Customers open a visual map of the venue, hover over seats to see live prices, click to place a **60-second hold**, and check out.
 
-> **Status:** designed and split into seven issues. Nothing is merged yet; #1 (scaffold) is in progress. See [Roadmap](Roadmap.md).
+> **Status:** all seven issues are built and merged in three PRs. See [Roadmap](Roadmap.md).
 
 ## The problem
 
@@ -41,7 +41,7 @@ See [Problem Statement](Problem-Statement.md) for details.
 | Layer | Technology |
 |---|---|
 | Backend | Java 21, Spring Boot 4.1, Spring Data JPA, Flyway, WebSocket (STOMP), Lombok |
-| Frontend | React, TypeScript, Vite, zustand, `@stomp/stompjs` |
+| Frontend | React, TypeScript, Vite, Tailwind CSS v4, zustand, `@stomp/stompjs` |
 | Database | H2 in memory, in PostgreSQL compatibility mode |
 | Testing | JUnit 5, Mockito, Awaitility, Vitest, Testing Library |
 | Formatting and lint | Spotless (Google Java Format), ESLint |

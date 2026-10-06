@@ -2,6 +2,31 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.0.4] - 2026-10-06
+
+### Added
+
+- **Frontend: Customers can hold seats, watch each hold count down, and check out, while the map
+  updates live.** Clicking a free seat holds it and it turns blue only once the server confirms. A
+  cart lists each held seat with its price, a total, and a countdown taken from the server's
+  `expiresAt`; at zero the seat leaves the cart. Seats can be released, and checkout confirms the
+  order with its total. A seat someone else took, or a hold that expired, shows a clear message. One
+  hook owns the STOMP connection: it subscribes first, buffers, loads the snapshot, applies only
+  updates with a newer `seq`, batches them once per animation frame, and reloads after every
+  reconnect while a badge says the map may be out of date. Styling is Tailwind CSS v4, with tier and
+  seat colours as theme tokens, and the React conventions now say so.
+  [#7](https://github.com/amalps565/theater-arena-booking/issues/7)
+
+### Fixed
+
+- **Frontend: The seat map stays responsive while showing and hovering all 12,000 seats.** The arena
+  is one SVG. Each seat is a memoized component that subscribes to its own seat only, so one change
+  redraws one circle. Pointer and click events are handled once on the map root through
+  `data-seat-id` rather than on every seat, a single tooltip shows the hovered seat's section, row,
+  number, status and live price, and zoom and pan move one SVG group without a React render. In a
+  headless browser, 200 rapid seat hovers produced no task over 50 ms.
+  [#6](https://github.com/amalps565/theater-arena-booking/issues/6)
+
 ## [0.0.3] - 2026-10-06
 
 ### Added

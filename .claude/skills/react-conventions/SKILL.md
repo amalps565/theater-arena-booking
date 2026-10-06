@@ -52,6 +52,11 @@ backend, and this app displays what the server decides.
 - The STOMP connection is owned by one hook; components never open their own socket.
 - A reusable component lives in `src/components/` with its test beside it; a hook lives in
   `src/hooks/` and is named `use*`.
+- Styling is Tailwind CSS v4 utility classes. Colours the app names (tiers, seat states) are theme
+  tokens in the `@theme` block of `src/index.css`, used as `fill-tier-vip`, `bg-seat-mine` and so
+  on, never hex values in components. A class that depends on state is picked from a lookup of full
+  class strings, never assembled from fragments, so Tailwind can see it. No CSS modules, no other CSS
+  files, and no inline `style` except a transform or position written imperatively through a ref.
 
 **Seat map performance rules**:
 - A seat is a `React.memo` component that subscribes to its own seat only, so one update re-renders
