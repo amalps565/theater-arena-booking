@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.0.8] - 2026-10-06
+
+### Added
+
+- **Repo: Newcomers can understand and run the app from the repository's front page.** A root
+  `README.md` explains what the app does, names the three flaws from the brief with a one-line fix
+  and a link to the page that explains each, lists the prerequisites, and gives copy-paste commands
+  to run the backend and frontend. A five-step walkthrough shows the fixes in action with a second,
+  private browser window, and the pre-PR commands match what CI runs. It links to the wiki, the
+  development workflow, this changelog and `CLAUDE.md` rather than repeating them, and shows the CI
+  status badge. Every command was run on a fresh clone.
+  [#14](https://github.com/amalps565/theater-arena-booking/issues/14)
+
 ## [0.0.7] - 2026-10-06
 
 ### Added
