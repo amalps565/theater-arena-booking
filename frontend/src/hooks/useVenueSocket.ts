@@ -2,6 +2,7 @@ import { Client } from '@stomp/stompjs'
 import { useEffect } from 'react'
 import { api } from '../api/client'
 import type { VenueMessage } from '../api/types'
+import { useAuthStore } from '../store/authStore'
 import { useSeatStore } from '../store/seatStore'
 import { useToastStore } from '../store/toastStore'
 
@@ -14,7 +15,7 @@ function brokerUrl(): string {
   return `${scheme}://${window.location.host}/ws`
 }
 
-export function useVenueSocket(): void {
+export function useVenueSocket(token: string): void {
   useEffect(() => {
     let buffering = true
     let buffered: VenueMessage[] = []
@@ -67,6 +68,7 @@ export function useVenueSocket(): void {
 
     const client = new Client({
       brokerURL: brokerUrl(),
+      connectHeaders: { Authorization: `Bearer ${token}` },
       reconnectDelay: RECONNECT_MS,
       heartbeatIncoming: HEARTBEAT_MS,
       heartbeatOutgoing: HEARTBEAT_MS,
@@ -75,6 +77,12 @@ export function useVenueSocket(): void {
           receive(JSON.parse(frameMessage.body) as VenueMessage)
         })
         void loadSnapshot()
+      },
+      onStompError: () => {
+        if (!disposed) {
+          useToastStore.getState().show('error', 'Your sign-in has expired. Please sign in again.')
+          useAuthStore.getState().signOut()
+        }
       },
       onWebSocketClose: () => {
         if (!disposed) {
@@ -92,5 +100,5 @@ export function useVenueSocket(): void {
       }
       void client.deactivate()
     }
-  }, [])
+  }, [token])
 }

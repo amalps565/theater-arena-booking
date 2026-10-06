@@ -1,7 +1,11 @@
-import type { HoldResponse, MyHoldsResponse, OrderResponse, VenueResponse } from './types'
-
-const CUSTOMER_ID_KEY = 'arena.customerId'
-const CUSTOMER_HEADER = 'X-Customer-Id'
+import { useAuthStore } from '../store/authStore'
+import type {
+  AuthResponse,
+  HoldResponse,
+  MyHoldsResponse,
+  OrderResponse,
+  VenueResponse,
+} from './types'
 
 export class ApiError extends Error {
   readonly status: number
@@ -14,35 +18,14 @@ export class ApiError extends Error {
   }
 }
 
-let sessionCustomerId: string | null = null
-
-function readStoredCustomerId(): string | null {
-  try {
-    return localStorage.getItem(CUSTOMER_ID_KEY)
-  } catch {
-    return null
-  }
-}
-
-function storeCustomerId(id: string): boolean {
-  try {
-    localStorage.setItem(CUSTOMER_ID_KEY, id)
-    return true
-  } catch {
-    return false
-  }
-}
-
-export function customerId(): string {
-  if (!sessionCustomerId) {
-    sessionCustomerId = readStoredCustomerId() ?? crypto.randomUUID()
-    storeCustomerId(sessionCustomerId)
-  }
-  return sessionCustomerId
-}
+const SIGN_IN_PATHS = ['/api/auth/login', '/api/auth/register']
 
 async function request<T>(method: string, path: string, body?: unknown): Promise<T> {
-  const headers: Record<string, string> = { [CUSTOMER_HEADER]: customerId() }
+  const headers: Record<string, string> = {}
+  const token = useAuthStore.getState().session?.token
+  if (token) {
+    headers.Authorization = `Bearer ${token}`
+  }
   if (body !== undefined) {
     headers['Content-Type'] = 'application/json'
   }
@@ -53,6 +36,9 @@ async function request<T>(method: string, path: string, body?: unknown): Promise
   })
   if (!response.ok) {
     const error = await response.json().catch(() => null)
+    if (response.status === 401 && !SIGN_IN_PATHS.includes(path)) {
+      useAuthStore.getState().signOut()
+    }
     throw new ApiError(
       response.status,
       error?.code ?? 'NETWORK_ERROR',
@@ -66,6 +52,10 @@ async function request<T>(method: string, path: string, body?: unknown): Promise
 }
 
 export const api = {
+  login: (username: string, password: string) =>
+    request<AuthResponse>('POST', '/api/auth/login', { username, password }),
+  register: (username: string, displayName: string, password: string) =>
+    request<AuthResponse>('POST', '/api/auth/register', { username, displayName, password }),
   venue: () => request<VenueResponse>('GET', '/api/venue'),
   myHolds: () => request<MyHoldsResponse>('GET', '/api/holds/me'),
   hold: (seatIds: number[]) => request<HoldResponse>('POST', '/api/holds', { seatIds }),

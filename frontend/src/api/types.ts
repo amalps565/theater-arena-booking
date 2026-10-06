@@ -30,6 +30,18 @@ export interface VenueResponse {
   seats: SeatWire[]
 }
 
+export interface User {
+  id: string
+  username: string
+  displayName: string
+}
+
+export interface AuthResponse {
+  token: string
+  expiresAt: string
+  user: User
+}
+
 export interface HeldSeat {
   seatId: number
   priceCents: number
