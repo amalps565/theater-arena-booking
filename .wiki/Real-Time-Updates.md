@@ -6,6 +6,7 @@
 
 - **STOMP over WebSocket**, using Spring's WebSocket support on the server and `@stomp/stompjs` in the browser.
 - **Endpoint:** `/ws`, plain WebSocket with no SockJS. The Vite dev server proxies it to the backend.
+- **Auth:** the client sends `Authorization: Bearer <token>` as a STOMP `CONNECT` header. A `CONNECT` without a valid token gets an `ERROR` frame and is closed, and the browser then signs the customer out.
 - **Topic:** `/topic/venue`. Clients may only subscribe; `SEND` frames are rejected.
 - **Heartbeats** every 10 seconds.
 

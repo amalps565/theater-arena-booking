@@ -70,4 +70,4 @@ Styling is Tailwind CSS v4. The colours below are theme tokens in `src/index.css
 
 ## API calls
 
-All REST calls go through `src/api/client.ts`. It attaches `X-Customer-Id` and turns `{code, message}` errors into typed errors. No component calls `fetch` or builds a URL itself.
+All REST calls go through `src/api/client.ts`. It attaches the signed-in customer's `Authorization: Bearer` token, signs out on a 401, and turns `{code, message}` errors into typed errors. No component calls `fetch` or builds a URL itself.

@@ -38,13 +38,15 @@ npm install
 npm run dev
 ```
 
-Open **http://localhost:5173**. The dev server forwards `/api` and `/ws` to the backend. Data lives in memory, so restarting the backend resets every hold and order.
+Open **http://localhost:5173**. The dev server forwards `/api` and `/ws` to the backend.
+
+Sign in with a demo account, **alice**, **bob** or **carol**, all with the password `arena123`, or create your own account on the sign-in page. Data lives in memory, so restarting the backend resets every hold, order and new account, and signs everyone out.
 
 ## See the fixes in action
 
 1. Hover any seat: the tooltip shows its section, row, seat, status and live price.
 2. Click a seat. It turns blue and appears in **Your seats** with a 60-second countdown.
-3. Open the app in a **private window** (it gets its own customer id) next to the first one. The seat you held is grey there, and clicking it says it's on hold.
+3. Open the app in a **private window** next to the first one and sign in as a different demo account. The seat you held is grey there, and clicking it says it's on hold.
 4. Hold a seat in one window and watch it change colour in the other within moments. Check out, and it shows as sold in both.
 5. Hold a seat and wait a minute without checking out. It leaves your cart and comes back on sale in both windows.
 

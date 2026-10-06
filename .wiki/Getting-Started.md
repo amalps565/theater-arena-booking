@@ -31,7 +31,7 @@ npm run dev
 
 Open **http://localhost:5173**. The Vite dev server forwards `/api` and `/ws` to the backend.
 
-To see the concurrency and live-update fixes, open a second browser window (or a private window, which gets its own customer id) and click the same seat in both.
+To see the concurrency and live-update fixes, sign in as a different demo account in a second, private browser window and click the same seat in both.
 
 ## Gate commands
 

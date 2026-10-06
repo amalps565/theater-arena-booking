@@ -40,6 +40,7 @@ interface SeatState {
   addMyHolds: (holds: HeldSeat[]) => void
   removeMyHolds: (seatIds: number[]) => void
   setConnection: (connection: Connection) => void
+  clearSession: () => void
 }
 
 const EMPTY_BOUNDS: Bounds = { width: 0, height: 0 }
@@ -166,4 +167,6 @@ export const useSeatStore = create<SeatState>()((set) => ({
     }),
 
   setConnection: (connection) => set({ connection }),
+
+  clearSession: () => set({ myHolds: {}, connection: 'connecting' }),
 }))

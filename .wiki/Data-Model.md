@@ -4,10 +4,19 @@
 
 ```mermaid
 erDiagram
+    APP_USER ||--o{ SEAT : "holds (held_by)"
+    APP_USER ||--o{ ORDERS : "places (customer_id)"
     SECTION ||--o{ SEAT : contains
     ORDERS ||--|{ ORDER_ITEM : has
     SEAT ||--o| ORDER_ITEM : "sold as"
 
+    APP_USER {
+        uuid id PK
+        varchar username "unique, lower case"
+        varchar display_name
+        varchar password_hash "BCrypt"
+        timestamp created_at
+    }
     SECTION {
         bigint id PK
         varchar name
