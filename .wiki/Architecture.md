@@ -26,7 +26,7 @@ flowchart LR
     end
     DB[(H2 in memory)]
 
-    Store -- "REST + X-Customer-Id" --> API
+    Store -- "REST + Bearer JWT" --> API
     Hold -- JPA / conditional UPDATE --> DB
     Job -- bulk UPDATE --> DB
     WS -- "seat and price updates" --> Store
@@ -63,7 +63,7 @@ theater-arena-booking/
 
 ## Frontend
 
-- **API client:** `src/api/client.ts` is the only code that calls `fetch`. It attaches `X-Customer-Id` and turns `{code, message}` errors into typed errors.
+- **API client:** `src/api/client.ts` is the only code that calls `fetch`. It attaches the signed-in customer's `Authorization: Bearer` token, signs out on a 401, and turns `{code, message}` errors into typed errors.
 - **Store:** one zustand store with seats normalized by id, patched by socket updates using the `seq` rule.
 - **Seat map:** one SVG with memoized seats, delegated pointer events, and one shared tooltip.
 - **Socket:** one hook owns the STOMP connection, buffering, and resync.

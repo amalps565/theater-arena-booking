@@ -45,7 +45,8 @@ backend, and this app displays what the server decides.
 
 **Architecture rules**:
 - TypeScript in strict mode; no `any` in a changed line.
-- Every REST call goes through `src/api/client.ts`, which attaches the `X-Customer-Id` header and maps
+- Every REST call goes through `src/api/client.ts`, which attaches the session's bearer token, signs out
+  on a 401, and maps
   `{code, message}` errors. No component calls `fetch` itself or hardcodes a URL.
 - Seat state lives in one zustand store, normalized by seat id. A component selects only the slice it
   renders.

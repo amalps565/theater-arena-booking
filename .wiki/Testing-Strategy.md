@@ -7,7 +7,7 @@
 | Level | Tool | What it covers |
 |---|---|---|
 | Backend unit | JUnit 5 + Mockito | `PricingService` (tiers, row ends, demand thresholds, rounding); service rules with mocked repositories |
-| Backend web | `@WebMvcTest` + `MockMvc` | Every endpoint's status codes, error codes, validation, and the `X-Customer-Id` check |
+| Backend web | `@WebMvcTest` + `MockMvc` | Every endpoint's status codes, error codes, validation, and sign-in (`AuthFlowTest`: tokens, 401s, forged tokens, holds owned by the account) |
 | Backend integration | `@SpringBootTest` on H2 | Hold, release, expiry, and checkout against the real schema |
 | Backend concurrency | `@SpringBootTest` + `CountDownLatch` | The double-booking fix (recipe below) |
 | Frontend unit | Vitest | Store rules: `seq` ordering, batching, buffering before the snapshot |
@@ -19,7 +19,7 @@
 The double-booking fix isn't done until this passes repeatedly.
 
 1. Seed a venue and pick one free seat.
-2. Create N threads (for example 20), each with its own customer id.
+2. Create N threads (for example 20), each with its own customer UUID.
 3. Hold every thread at a `CountDownLatch` start gate, then release them together.
 4. **Scenario A, same seat:** every thread holds the same seat.
 5. **Scenario B, overlapping sets:** threads hold overlapping pairs of seats, such as {1,2}, {2,3}, and {3,4}.

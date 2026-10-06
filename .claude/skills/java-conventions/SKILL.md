@@ -78,7 +78,8 @@ held to. Keep it free of counts, versions, issue numbers, file inventories and d
 - Errors leave through one `@RestControllerAdvice` as `{code, message}` with 400, 404, 409 or 410.
   A domain exception carries its status and code; no bare `RuntimeException`, no empty catch, no
   `Optional.get()`.
-- The customer id comes from the `X-Customer-Id` header, validated as a UUID, never from the body.
+- The customer id is the subject of the verified JWT (`CurrentCustomer.id(jwt)`), never a header,
+  body or path value. Passwords are BCrypt hashes and are never logged or returned.
 - Dependency injection is constructor injection via `@RequiredArgsConstructor`. Logging is `@Slf4j`
   with parameterized messages.
 
@@ -100,7 +101,8 @@ held to. Keep it free of counts, versions, issue numbers, file inventories and d
 - Price computed outside `PricingService`, or checkout charging anything but the frozen held price.
 - Money held as a floating type or `BigDecimal`.
 - `synchronized` or an in-memory lock used for booking correctness.
-- A customer id taken from the request body.
+- A customer id taken from anywhere but the verified JWT, or an endpoint that changes holds or orders
+  without requiring sign-in.
 - A schema change outside Flyway, or an edited released migration.
 - A `@Query` assembled by string concatenation.
 - A swallowed exception, a bare `Optional.get()`, or an error response leaking a stack trace or SQL.

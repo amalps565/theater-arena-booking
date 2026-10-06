@@ -2,6 +2,29 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.0.10] - 2026-10-06
+
+### Added
+
+- **Full stack: Customers sign in before holding and buying seats, and their holds and orders belong
+  to their account.** The app opens on a sign-in page with "Sign in" and "Create account" tabs and
+  lists the demo accounts `alice`, `bob` and `carol` (password `arena123`). `POST /api/auth/login`
+  and `POST /api/auth/register` return an 8-hour HS256 JWT. Holding, releasing, listing holds and
+  checking out now require it and take the customer from the token's subject, so the same account
+  sees the same holds in any browser. A missing, expired or forged token gets
+  `401 UNAUTHENTICATED`, and a wrong password gets `401 INVALID_CREDENTIALS` without revealing
+  whether the username exists. The live-update WebSocket checks the token on `CONNECT`. Passwords
+  are stored only as BCrypt hashes, and the signing key comes from `arena.auth.jwt-secret` or is
+  generated at startup, so no key lives in the code. The header shows who is signed in, with a sign
+  out button. `GET /api/venue` stays public for browsing, and two accounts still cannot
+  hold the same seat at once.
+  [#19](https://github.com/amalps565/theater-arena-booking/issues/19)
+
+### Removed
+
+- **Full stack: The browser-generated `X-Customer-Id` header and the `INVALID_CUSTOMER_ID` error.**
+  The signed-in account replaces them. [#19](https://github.com/amalps565/theater-arena-booking/issues/19)
+
 ## [0.0.9] - 2026-10-06
 
 ### Changed
