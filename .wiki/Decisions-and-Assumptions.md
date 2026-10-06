@@ -17,6 +17,7 @@
 | Identity | A random customer id per browser, sent as `X-Customer-Id` | No login needed for the brief |
 | Live updates | STOMP over WebSocket, one message per seat change, with a `seq` | Small messages that can be ordered and de-duplicated |
 | Seat map | One SVG, memoized seats, delegated events, one shared tooltip | Thousands of seats without freezing |
+| Styling | Tailwind CSS v4 with theme tokens for tier and seat colours | Utility classes keep 12,000 seats on a handful of class strings; tokens keep the colours in one place |
 | Changelog | One root `CHANGELOG.md`, entries tagged `Backend:`, `Frontend:`, `Full stack:` or `Repo:` | One version per PR across both apps |
 
 ## Assumptions

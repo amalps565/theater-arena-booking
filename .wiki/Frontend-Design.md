@@ -40,14 +40,18 @@ One zustand store:
 
 | Component | Responsibility |
 |---|---|
-| `App` | Layout: map, cart, connection badge |
+| `App` | Layout: header, map, cart, toasts |
 | `SeatMap` | The SVG, zoom and pan, delegated events, legend |
 | `SeatDot` | One memoized circle with `data-seat-id`, coloured by tier and status |
 | `Tooltip` | Section, row, seat, status, and live price for the hovered seat |
 | `CartPanel` | Held seats, prices, total, a countdown per hold, Release and Checkout |
-| `Toast` | Messages for 409 and 410 errors, for example "Seat A12 was just taken" |
+| `Toasts` | Messages for 409 and 410 errors and confirmed orders, for example "Seat A12 was just taken" |
+| `ConnectionBadge` | "Live", "Connecting…" or "Reconnecting… map may be out of date" |
+| `Legend` | Tier and status colours |
 
-## Colours
+## Styling and colours
+
+Styling is Tailwind CSS v4. The colours below are theme tokens in `src/index.css` (`--color-tier-vip`, `--color-seat-mine`, …), used as classes such as `fill-tier-vip` on seats and `bg-seat-mine` in the legend.
 
 | State | Colour |
 |---|---|
