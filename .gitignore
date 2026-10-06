@@ -1,0 +1,14 @@
+backend/target/
+backend/.mvn/wrapper/maven-wrapper.jar
+frontend/node_modules/
+frontend/dist/
+.claude/settings.local.json
+.claude/worktrees/
+.env
+.env.*
+!.env.example
+*.log
+.idea/
+.vscode/
+*.iml
+.DS_Store
