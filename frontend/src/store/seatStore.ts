@@ -19,6 +19,8 @@ export interface SectionLabel {
   id: number
   x: number
   y: number
+  width: number
+  height: number
 }
 
 export interface Bounds {
@@ -55,21 +57,24 @@ function toMyHolds(holds: HeldSeat[]): Record<number, MyHold> {
 }
 
 function labelsOf(seats: Seat[]): SectionLabel[] {
-  const extents = new Map<number, { minX: number; maxX: number; minY: number }>()
+  const extents = new Map<number, { minX: number; maxX: number; minY: number; maxY: number }>()
   for (const seat of seats) {
     const extent = extents.get(seat.sectionId)
     if (!extent) {
-      extents.set(seat.sectionId, { minX: seat.x, maxX: seat.x, minY: seat.y })
+      extents.set(seat.sectionId, { minX: seat.x, maxX: seat.x, minY: seat.y, maxY: seat.y })
     } else {
       extent.minX = Math.min(extent.minX, seat.x)
       extent.maxX = Math.max(extent.maxX, seat.x)
       extent.minY = Math.min(extent.minY, seat.y)
+      extent.maxY = Math.max(extent.maxY, seat.y)
     }
   }
   return [...extents.entries()].map(([id, extent]) => ({
     id,
     x: (extent.minX + extent.maxX) / 2,
     y: extent.minY,
+    width: extent.maxX - extent.minX,
+    height: extent.maxY - extent.minY,
   }))
 }
 

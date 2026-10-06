@@ -49,6 +49,15 @@ One zustand store:
 | `ConnectionBadge` | "Live", "Connecting…" or "Reconnecting… map may be out of date" |
 | `Legend` | Tier and status colours, shown inline in the map toolbar |
 
+## Phones
+
+Below 640 px wide the layout adapts rather than shrinking the desktop view:
+
+- The map opens zoomed (6×) on the front rows of the Center VIP section, so seats are about 11 px across and the section name is readable. Reset shows the whole arena; zoom and drag-to-pan work as on desktop.
+- The header drops the description line, shows "Signed in as …" in its place, and keeps Sign out and the connection badge on one line. The badge shortens "Reconnecting… map may be out of date" to "Reconnecting…".
+- Toasts appear at the top of the screen instead of the bottom, so they never cover the cart's Check out button.
+- The cart sits below the map, and the page never scrolls sideways.
+
 ## Styling and colours
 
 Styling is Tailwind CSS v4. The colours below are theme tokens in `src/index.css` (`--color-tier-vip`, `--color-seat-mine`, …), used as classes such as `fill-tier-vip` on seats and `bg-seat-mine` in the legend.

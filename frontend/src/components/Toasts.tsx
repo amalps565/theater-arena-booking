@@ -10,7 +10,7 @@ export function Toasts() {
   const toasts = useToastStore((s) => s.toasts)
   const dismiss = useToastStore((s) => s.dismiss)
   return (
-    <div className="pointer-events-none fixed bottom-4 left-1/2 z-30 flex w-full max-w-md -translate-x-1/2 flex-col gap-2 px-4">
+    <div className="pointer-events-none fixed top-3 left-1/2 z-30 flex w-full max-w-md -translate-x-1/2 flex-col gap-2 px-4 sm:top-auto sm:bottom-4">
       {toasts.map((toast) => (
         <div
           key={toast.id}

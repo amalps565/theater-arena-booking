@@ -1,6 +1,6 @@
 import { memo, useEffect, useRef, type PointerEvent as ReactPointerEvent } from 'react'
 import { toggleSeat } from '../lib/seatActions'
-import { useSeatStore } from '../store/seatStore'
+import { useSeatStore, type SectionLabel } from '../store/seatStore'
 import { Legend } from './Legend'
 import { SeatDot } from './SeatDot'
 import { Tooltip, type TooltipHandle } from './Tooltip'
@@ -14,6 +14,9 @@ const STAGE_TOP = 20
 const STAGE_HEIGHT = 60
 const LABEL_OFFSET = 14
 const MAP_PADDING = 12
+const NARROW_SCREEN_PX = 640
+const NARROW_SCREEN_ZOOM = 6
+const FRONT_ROWS_SHARE = 0.15
 
 interface View {
   x: number
@@ -47,6 +50,14 @@ function writeView(group: SVGGElement | null, { x, y, k }: View): void {
   group?.setAttribute('transform', `translate(${x} ${y}) scale(${k})`)
 }
 
+function focusView(section: SectionLabel, viewBoxWidth: number, viewBoxHeight: number): View {
+  const k = Math.min(MAX_ZOOM, NARROW_SCREEN_ZOOM)
+  const centerX = -MAP_PADDING + viewBoxWidth / 2
+  const centerY = viewBoxHeight / 2
+  const frontRowsY = section.y + section.height * FRONT_ROWS_SHARE
+  return { k, x: centerX - k * section.x, y: centerY - k * frontRowsY }
+}
+
 const SeatLayer = memo(function SeatLayer() {
   const seatIds = useSeatStore((s) => s.seatIds)
   return (
@@ -74,6 +85,9 @@ const SectionLabels = memo(function SectionLabels() {
 
 export function SeatMap() {
   const bounds = useSeatStore((s) => s.bounds)
+  const focusSection = useSeatStore(
+    (s) => s.labels.find((label) => s.sections[label.id]?.tier === 'VIP') ?? s.labels[0],
+  )
   const svgRef = useRef<SVGSVGElement>(null)
   const groupRef = useRef<SVGGElement>(null)
   const tooltipRef = useRef<TooltipHandle>(null)
@@ -108,6 +122,15 @@ export function SeatMap() {
     svg.addEventListener('wheel', onWheel, { passive: false })
     return () => svg.removeEventListener('wheel', onWheel)
   }, [])
+
+  useEffect(() => {
+    const svg = svgRef.current
+    if (!svg || !focusSection || svg.clientWidth >= NARROW_SCREEN_PX) {
+      return
+    }
+    view.current = focusView(focusSection, bounds.width + MAP_PADDING, bounds.height)
+    writeView(groupRef.current, view.current)
+  }, [focusSection, bounds.width, bounds.height])
 
   const onPointerDown = (event: ReactPointerEvent<SVGSVGElement>) => {
     drag.current = {
