@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.0.6] - 2026-10-06
+
+### Fixed
+
+- **Repo: Every text file is checked out with LF line endings, whatever the machine's git
+  settings.** With `core.autocrlf=true`, Windows checkouts turned files into CRLF, so scripted edits
+  that matched on `\n` silently changed nothing, as happened to the 0.0.5 changelog entry. A root
+  `.gitattributes` now sets `* text=auto eol=lf`, keeps `.cmd`, `.bat` and `.ps1` as CRLF, and marks
+  images, fonts and jars as binary. It replaces `backend/.gitattributes`, so the rule lives in one
+  place. The files stored in git were already LF, so no file content changed.
+
 ## [0.0.5] - 2026-10-06
 
 ### Fixed
