@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.0.7] - 2026-10-06
+
+### Added
+
+- **Repo: Every pull request to `main`, and every push to it, is checked automatically.**
+  `.github/workflows/ci.yml` runs three separate checks: the backend's Spotless format check and
+  test suite, the frontend's lint with no warnings allowed plus its tests and production build, and
+  `scripts/check-added-comments.cjs` against the PR base so no source file gains a comment. Both apps
+  are checked on every PR, so a contract break between them is caught whichever side changed. Maven
+  and npm downloads are cached between runs. `backend/mvnw` is now marked executable so it runs on
+  the Linux runner, and the workflow is documented in `.wiki/Development-Workflow.md`.
+  [#13](https://github.com/amalps565/theater-arena-booking/issues/13)
+
 ## [0.0.6] - 2026-10-06
 
 ### Fixed
