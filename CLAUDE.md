@@ -45,8 +45,8 @@ This is the **only** register of this repo's values. Every convention file and s
 reads it here; none of them restates it, so a value changes in exactly one place. The exception is
 each `<stack>-conventions` skill, which holds the rules and the **Scope** of its own stack.
 
-- **Repo**: theater-arena-booking — interactive arena seat map with live dynamic pricing, 60-second
-  seat holds and checkout. Not yet pushed to GitHub; set this to `<owner>/<repo>` once it is.
+- **Repo**: amalps565/theater-arena-booking — interactive arena seat map with live dynamic pricing,
+  60-second seat holds and checkout.
 - **Stack**: monorepo. `backend/`: Spring Boot over H2 with Flyway, STOMP over WebSocket.
   `frontend/`: Vite + React + TypeScript SPA with zustand and `@stomp/stompjs`.
 - **Package Manager**: maven wrapper in `backend/`; npm in `frontend/`
