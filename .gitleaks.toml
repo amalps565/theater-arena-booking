@@ -1,0 +1,11 @@
+[extend]
+useDefault = true
+
+[allowlist]
+description = "Repo-wide false-positive allowlist."
+paths = [
+  '''\.env\.(example|sample|template)$''',
+  '''^\.gitleaks\.toml$''',
+  '''^\.claude/hooks/block-secrets\.cjs$''',
+  '''^\.claude/hooks/tests/''',
+]

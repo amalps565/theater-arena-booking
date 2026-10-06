@@ -1,71 +1,138 @@
-name: CI
+name: Continuous Integration
 
 on:
   pull_request:
-    branches: [main]
+    branches:
+      - main
   push:
-    branches: [main]
+    branches:
+      - main
 
 concurrency:
-  group: ci-${{ github.ref }}
+  group: ci-${{ github.workflow }}-${{ github.head_ref || github.ref }}
   cancel-in-progress: true
 
 permissions:
   contents: read
 
 jobs:
+  quality:
+    name: Quality (versions, PR title, comments, hooks, secrets)
+    timeout-minutes: 10
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: frontend/.nvmrc
+
+      - name: Fetch the base branch
+        if: github.event_name == 'pull_request'
+        run: git fetch origin "${{ github.base_ref }}:refs/remotes/origin/${{ github.base_ref }}"
+
+      - name: Validate the version bump against the base branch
+        if: github.event_name == 'pull_request'
+        run: node scripts/validate-versions.cjs "origin/${{ github.base_ref }}"
+
+      - name: Validate that the three version files agree
+        if: github.event_name != 'pull_request'
+        run: node scripts/validate-versions.cjs
+
+      - name: Check PR title
+        if: ${{ !cancelled() && github.event_name == 'pull_request' }}
+        env:
+          TITLE: ${{ github.event.pull_request.title }}
+        run: |
+          fail() { echo "PR title must be: #<issue> | <short description> (10-100 chars)"; echo "  got: $TITLE"; exit 1; }
+          LEN=$(printf '%s' "$TITLE" | wc -m | tr -d ' ')
+          if [ "$LEN" -lt 10 ] || [ "$LEN" -gt 100 ]; then
+            echo "PR title is $LEN characters; it must be between 10 and 100."
+            fail
+          fi
+          printf '%s' "$TITLE" | grep -qE '^#[0-9]+ \| .+' || fail
+          echo "PR title OK: $TITLE"
+
+      - name: Reject comment lines added under a gated source path
+        if: ${{ !cancelled() && github.event_name == 'pull_request' }}
+        run: node scripts/check-added-comments.cjs "origin/${{ github.base_ref }}"
+
+      - name: Run the guardrail hook tests
+        if: ${{ !cancelled() }}
+        run: node .claude/hooks/tests/run-all.cjs
+
+      - name: Install gitleaks
+        if: ${{ !cancelled() }}
+        env:
+          GITLEAKS_VERSION: 8.21.2
+        run: |
+          set -eo pipefail
+          curl -sSfL "https://github.com/gitleaks/gitleaks/releases/download/v${GITLEAKS_VERSION}/gitleaks_${GITLEAKS_VERSION}_linux_x64.tar.gz" \
+            | tar -xz -C /usr/local/bin gitleaks
+          gitleaks version
+
+      - name: Secret scan (gitleaks)
+        if: ${{ !cancelled() }}
+        run: gitleaks dir . --config .gitleaks.toml --redact --no-banner --verbose
+
   backend:
     name: Backend (format + tests)
+    timeout-minutes: 20
     runs-on: ubuntu-latest
     defaults:
       run:
         working-directory: backend
     steps:
       - uses: actions/checkout@v4
+
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: '21'
           cache: maven
           cache-dependency-path: backend/pom.xml
-      - name: Check formatting
+
+      - name: Check code formatting
         run: ./mvnw -B -q spotless:check
+
       - name: Run tests
+        if: ${{ !cancelled() }}
         run: ./mvnw -B test
 
   frontend:
     name: Frontend (lint + tests + build)
+    timeout-minutes: 15
     runs-on: ubuntu-latest
     defaults:
       run:
         working-directory: frontend
     steps:
       - uses: actions/checkout@v4
+
       - uses: actions/setup-node@v4
         with:
-          node-version: '24'
+          node-version-file: frontend/.nvmrc
           cache: npm
           cache-dependency-path: frontend/package-lock.json
+
       - name: Install dependencies
         run: npm ci
-      - name: Lint
+
+      - name: Run eslint
+        if: ${{ !cancelled() }}
         run: npm run lint
-      - name: Test
+
+      - name: Run tests
+        if: ${{ !cancelled() }}
         run: npm test -- --run
-      - name: Build
+
+      - name: Check it builds
+        if: ${{ !cancelled() }}
         run: npm run build
 
-  comments:
-    name: No comments added to source
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '24'
-      - name: Check added comments
-        env:
-          BASE_REF: ${{ github.event_name == 'pull_request' && format('origin/{0}', github.base_ref) || github.event.before }}
-        run: node scripts/check-added-comments.cjs "$BASE_REF"
+      - name: Run the react-lint hook suite against the installed eslint
+        if: ${{ !cancelled() }}
+        working-directory: .
+        run: node .claude/hooks/tests/react-lint.test.cjs
