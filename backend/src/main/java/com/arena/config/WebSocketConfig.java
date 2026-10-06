@@ -12,6 +12,10 @@ import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.messaging.support.ChannelInterceptor;
 import org.springframework.messaging.support.MessageHeaderAccessor;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
+import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.security.oauth2.jwt.JwtDecoder;
+import org.springframework.security.oauth2.jwt.JwtException;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker;
 import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
 import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer;
@@ -23,7 +27,14 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
   public static final String VENUE_TOPIC = "/topic/venue";
   private static final long HEARTBEAT_MS = 10_000;
 
+  private static final String BEARER_PREFIX = "Bearer ";
+
   private final ThreadPoolTaskScheduler heartbeatScheduler = heartbeatScheduler();
+  private final JwtDecoder jwtDecoder;
+
+  public WebSocketConfig(JwtDecoder jwtDecoder) {
+    this.jwtDecoder = jwtDecoder;
+  }
 
   @Override
   public void registerStompEndpoints(StompEndpointRegistry registry) {
@@ -43,7 +54,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
   @Override
   public void configureClientInboundChannel(ChannelRegistration registration) {
-    registration.interceptors(new SubscribeOnlyInterceptor());
+    registration.interceptors(new SignedInSubscriberInterceptor(jwtDecoder));
   }
 
   @PreDestroy
@@ -59,7 +70,13 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     return scheduler;
   }
 
-  static final class SubscribeOnlyInterceptor implements ChannelInterceptor {
+  static final class SignedInSubscriberInterceptor implements ChannelInterceptor {
+
+    private final JwtDecoder jwtDecoder;
+
+    SignedInSubscriberInterceptor(JwtDecoder jwtDecoder) {
+      this.jwtDecoder = jwtDecoder;
+    }
 
     @Override
     public Message<?> preSend(Message<?> message, MessageChannel channel) {
@@ -68,14 +85,30 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
       if (accessor == null) {
         return message;
       }
-      if (StompCommand.SEND.equals(accessor.getCommand())) {
+      StompCommand command = accessor.getCommand();
+      if (StompCommand.CONNECT.equals(command)) {
+        accessor.setUser(new JwtAuthenticationToken(authenticate(message, accessor)));
+      }
+      if (StompCommand.SEND.equals(command)) {
         throw new MessageDeliveryException(message, "Clients may only subscribe.");
       }
-      if (StompCommand.SUBSCRIBE.equals(accessor.getCommand())
+      if (StompCommand.SUBSCRIBE.equals(command)
           && !VENUE_TOPIC.equals(accessor.getDestination())) {
         throw new MessageDeliveryException(message, "Only " + VENUE_TOPIC + " can be subscribed.");
       }
       return message;
+    }
+
+    private Jwt authenticate(Message<?> message, StompHeaderAccessor accessor) {
+      String header = accessor.getFirstNativeHeader("Authorization");
+      if (header == null || !header.startsWith(BEARER_PREFIX)) {
+        throw new MessageDeliveryException(message, "Sign in before connecting.");
+      }
+      try {
+        return jwtDecoder.decode(header.substring(BEARER_PREFIX.length()));
+      } catch (JwtException invalid) {
+        throw new MessageDeliveryException(message, "Your sign-in has expired or is invalid.");
+      }
     }
   }
 }
