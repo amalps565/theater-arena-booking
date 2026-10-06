@@ -9,8 +9,8 @@ The seven issues ship in three PRs to save time: #1 alone, #2–#5 together (one
 | [#3](https://github.com/amalps565/theater-arena-booking/issues/3) | Two customers can no longer hold the same seat at the same time | backend | Atomic hold, release, `GET /api/holds/me`, **concurrency test** | Flaw 1 | #2 | ✅ Merged ([PR #9](https://github.com/amalps565/theater-arena-booking/pull/9)) |
 | [#4](https://github.com/amalps565/theater-arena-booking/issues/4) | Abandoned seat holds expire after 60 seconds and held seats can be bought | backend | Expiry job, checkout, orders | Flaw 3 | #3 | ✅ Merged ([PR #9](https://github.com/amalps565/theater-arena-booking/pull/9)) |
 | [#5](https://github.com/amalps565/theater-arena-booking/issues/5) | Open seat maps receive seat and price changes as they happen | backend | STOMP config, after-commit publisher | | #3, #4 | ✅ Merged ([PR #9](https://github.com/amalps565/theater-arena-booking/pull/9)) |
-| [#6](https://github.com/amalps565/theater-arena-booking/issues/6) | The seat map stays responsive while showing and hovering thousands of seats | frontend | SVG seat map, store, tooltip, zoom and pan | Flaw 2 | #2 | ✅ Built in PR 3 |
-| [#7](https://github.com/amalps565/theater-arena-booking/issues/7) | Customers can hold seats, watch the countdown and check out from the seat map | frontend | Hold on click, cart with countdown, checkout, socket hook | | #3–#6 | ✅ Built in PR 3 |
+| [#6](https://github.com/amalps565/theater-arena-booking/issues/6) | The seat map stays responsive while showing and hovering thousands of seats | frontend | SVG seat map, store, tooltip, zoom and pan | Flaw 2 | #2 | ✅ Merged ([PR #10](https://github.com/amalps565/theater-arena-booking/pull/10)) |
+| [#7](https://github.com/amalps565/theater-arena-booking/issues/7) | Customers can hold seats, watch the countdown and check out from the seat map | frontend | Hold on click, cart with countdown, checkout, socket hook | | #3–#6 | ✅ Merged ([PR #10](https://github.com/amalps565/theater-arena-booking/pull/10)) |
 
 ## Order
 

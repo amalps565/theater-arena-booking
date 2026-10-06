@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.0.5] - 2026-10-06
+
+### Fixed
+
+- **Repo: The roadmap shows #6 and #7 as merged.** `.wiki/Roadmap.md` still listed both as "Built in
+  PR 3" because the PR number was not known when the docs were written; they now link to PR #10, so
+  every issue on the roadmap reads as merged.
+
 ## [0.0.4] - 2026-10-06
 
 ### Added
