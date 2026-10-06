@@ -18,16 +18,16 @@ Every request sends `X-Customer-Id: <uuid>`. The browser creates the id once and
 
 ### `GET /api/venue`
 
-Seats are sent as arrays rather than objects, which keeps a 12,000-seat response small.
+Seats are sent as arrays rather than objects, and the response is gzip-compressed: about 530 KB of JSON for 12,000 seats travels as about 65 KB. A held seat whose hold has expired is reported as `AVAILABLE`. `priceSeq` is the section's latest price-update sequence; see [Real-Time Updates](Real-Time-Updates.md).
 
 ```json
 {
   "sections": [
-    { "id": 1, "name": "Floor A", "tier": "VIP", "basePriceCents": 15000 }
+    { "id": 2, "name": "Center VIP", "tier": "VIP", "basePriceCents": 15000, "priceSeq": 0 }
   ],
   "seatFields": ["id", "sectionId", "x", "y", "row", "number", "status", "priceCents", "seq"],
   "seats": [
-    [101, 1, 120, 340, "A", 12, "AVAILABLE", 19500, 0]
+    [651, 2, 666, 126, "A", 1, "AVAILABLE", 19500, 0]
   ]
 }
 ```
@@ -48,7 +48,11 @@ All seats are held, or none are.
 
 ### `GET /api/holds/me`
 
-The same shape as the hold response, with `expiresAt` given per hold. It lists only holds that haven't expired.
+```json
+{ "holds": [{ "seatId": 101, "priceCents": 19500, "expiresAt": "2026-10-06T14:03:21Z" }] }
+```
+
+It lists only holds that haven't expired.
 
 ### `POST /api/checkout`
 

@@ -2,6 +2,40 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.0.3] - 2026-10-06
+
+### Added
+
+- **Backend: Customers can load the whole arena with a live price for every seat.**
+  `GET /api/venue` returns six sections in three tiers and 12,000 seats; Flyway creates the schema
+  and a startup seeder fills it. Seats travel as compact arrays and the response is gzip-compressed, so the
+  snapshot is about 65 KB on the wire. `PricingService` is the only place prices are computed: base
+  price by tier, 1.3× for the front row falling to 1.0× at the back, and 1.15× or 1.35× once a
+  section is more than half or four-fifths full, rounded to 50 cents and held as `long` cents. A
+  hold that has expired is reported as available.
+  [#2](https://github.com/amalps565/theater-arena-booking/issues/2)
+- **Backend: Seats that someone abandons come back on sale, and held seats can be bought at the
+  price shown.** Every hold lasts 60 seconds. An expired hold counts as free at once in every
+  availability check, and a job releases expired holds every 5 seconds. `POST /api/checkout` locks
+  the customer's seats, refuses with `410 HOLD_EXPIRED` if any hold ran out, and otherwise marks them
+  sold and records an order at the frozen hold prices. A unique seat per order item stops any seat
+  being sold twice. [#4](https://github.com/amalps565/theater-arena-booking/issues/4)
+- **Backend: Open seat maps receive seat and price changes as they happen.** STOMP over WebSocket
+  at `/ws` broadcasts one `SEAT` message per changed seat on `/topic/venue`, and a `PRICES` message
+  for a section whose demand band changed. Messages are sent only after the transaction commits, so a
+  failed hold is never broadcast, and each carries a `seq` so clients can drop stale updates.
+  Clients may only subscribe. [#5](https://github.com/amalps565/theater-arena-booking/issues/5)
+
+### Fixed
+
+- **Backend: Two customers can no longer hold the same seat at the same time.** A hold is one
+  conditional `UPDATE` that only succeeds while the seat is free or its hold has expired, and the
+  number of rows changed is checked, so the database lets exactly one request win. A request for
+  several seats holds all of them or none, and losers get `409 SEAT_TAKEN`. A customer can hold up
+  to 8 seats, release one with `DELETE /api/holds/{seatId}`, and list theirs with
+  `GET /api/holds/me`. A test fires 20 simultaneous holds at one seat, five times over, and always
+  sees exactly one winner. [#3](https://github.com/amalps565/theater-arena-booking/issues/3)
+
 ## [0.0.2] - 2026-10-06
 
 ### Added
