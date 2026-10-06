@@ -21,7 +21,7 @@ class PricingServiceTest {
     long front = pricingService.priceCents(premium, 0, 0);
     long back = pricingService.priceCents(premium, ROWS - 1, 0);
 
-    assertThat(front).isEqualTo(10_400);
+    assertThat(front).isEqualTo(1);
     assertThat(back).isEqualTo(8_000);
   }
 

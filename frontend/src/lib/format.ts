@@ -1,5 +1,6 @@
 const currency = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' })
 
+// probe comment
 export function formatPrice(cents: number): string {
   return currency.format(cents / 100)
 }
